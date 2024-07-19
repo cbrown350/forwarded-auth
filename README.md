@@ -19,6 +19,19 @@
 
 Once running, it works for any Docker container added at any time that is proxied via Traefik by only setting a few labels. The service in the container is protected via a cookie, jwt token in as a query parameter, a username/password set up through the included admin panel or a passphrase query parameter set as a forwarded-auth container env var.
 
+### Examples
+#### Passphrase
+GET https://<service_name>?pf=<passphrase>
+#### Username/Password
+GET https://<service_name>?u=<username>&p=<password>
+#### JWT Token
+GET https://<service_name>?t=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImNicm93biIsInJlbW90ZUlwIjoiMTcyLjE4LjAuMSIsImlhdCI6MTcyMTM1MjM2NSwiZXhwIjoxNzIxNzg0MzY1fQ.haUQ11ecDEdbeKnESr5iUCL4S2zXpoxhOAf0mqpJ_z4
+#### Cookie
+GET https://<service_name>
+cookie: forwardAuth=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImNicm93biIsInJlbW90ZUlwIjoiMTcyLjE4LjAuMSIsImlhdCI6MTcyMTM1MjM2NSwiZXhwIjoxNzIxNzg0MzY1fQ.haUQ11ecDEdbeKnESr5iUCL4S2zXpoxhOAf0mqpJ_z4
+
+After any successful authentication, the forwarded-auth service will set a cookie with the JWT token, so once you authenticate initially through a static url, subsequent requests will be authenticated automatically.
+
 ### Prerequisites
 
 This works as a container for Traefik. You must have Traefik running as a container proxy/loadbalancer in Docker or Kubernetes.
@@ -64,11 +77,16 @@ You can access the admin page for adding users/passwords by going to `http://loc
 
 A full configuration example is set out between the two `docker-compose.yaml` files in the root and `.devcontainer/` folders (`dummy_site` is the protected service).
 
+| URL query parameters for auth requests from Traefik (set on the url in the Traefik service label `forwardauth.address`)                                                                                                 | Description                                                                                                                        |
+| ------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| `cookie_domain`                                     | Domain set on the auth cookie; may be specific to exact domain or on the root domain (settings are lax) |
+| `X-Redirect-On-Auth-Fail-URL`                                     | URL to which failed requests are redirected for the service |
+
 See the full [forwardauth Traefik documentation](https://doc.traefik.io/traefik/middlewares/http/forwardauth/) for the related labels: `https://doc.traefik.io/traefik/middlewares/http/forwardauth/`
 
 | Labels Set on Service Container                                                                                                 | Description                                                                                                                        |
 | ------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
-| `traefik.http.middlewares.<middleware-name>.forwardauth.address=<path to auth container>`                                     | Address Traefik uses to authorize requests; should point to instance of this container (see `.devcontainer/docker-compose.yaml`) |
+| `traefik.http.middlewares.<middleware-name>.forwardauth.address=<path to auth container>`                                     | Address Traefik uses to authorize requests and uses query parameters described above; should point to instance of this container (see `.devcontainer/docker-compose.yaml`) |
 | `traefik.http.middlewares.<middleware-name>.forwardauth.addAuthCookiesToResponse=${COOKIE_NAME:-forwardAuth}`                 | Name for cookie set by forwarded-auth (see `.devcontainer/docker-compose.yaml`)                                                  |
 | `traefik.http.middlewares.<middleware-name>.forwardauth.authRequestHeaders=cookie,${ALLOW_IP_NO_CREDENTIALS_TRUSTED_HEADERS}` | List of headers that Traefik forwards to the forwarded-auth request (see `.devcontainer/docker-compose.yaml`)                    |
 
