@@ -24,7 +24,6 @@ services:
       - LOG_LEVEL=${LOG_LEVEL:-info}
       - SERVER_IP=${SERVER_IP:-0.0.0.0}
       - SERVER_PORT=${SERVER_PORT:-8000}
-      - HOSTNAME=${HOSTNAME}
       - DB_FILE_PATH=${DB_FILE_PATH:-/app/config/json.sqlite}
       - NODE_OPTIONS="--max-old-space-size=4096"
       - ADMIN_PASSWORD=${ADMIN_PASSWORD}

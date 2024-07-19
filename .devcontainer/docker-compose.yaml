@@ -93,7 +93,7 @@ services:
       - traefik.http.routers.dummy_site-server-unsecure.service=dummy_site-server      
 
       - traefik.http.middlewares.test-auth.forwardauth.authRequestHeaders=cookie,${ALLOW_IP_NO_CREDENTIALS_TRUSTED_HEADERS}
-      - traefik.http.middlewares.robots-header.headers.customresponseheaders.X-Robots-Tag=noindex,nofollow,nosnippet,noarchive,notranslate,noimageindex
+      - traefik.http.middlewares.robots-header.headers.customresponseheaders.X-Robots-Tag=noindex,nofollow,nosnippet,noarchive,notranslate,noimageindex # prevent Google from indexing service
       - traefik.http.routers.dummy_site-server.middlewares=middlewares-chain
 
       - traefik.http.routers.dummy_site-server.rule=Host(`${ACME_TEST_DOMAIN}`)
