@@ -15,7 +15,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/cbrown350/forwarded-auth.git"
+    "url": "git+ssh://git@github.com:cbrown350/forwarded-auth.git"
   },
   "author": "Clifford B. Brown",
   "license": "MIT",
