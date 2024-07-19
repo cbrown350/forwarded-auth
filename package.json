@@ -1,0 +1,61 @@
+{
+  "name": "forwarded-auth",
+  "version": "1.0.0",
+  "description": "Auth agent to which forwarded auth requests can be sent; designed for Traefik",
+  "main": "src/app.js",
+  "engines": {
+    "node": "^21.0.0",
+    "npm": ">=9.0.0"
+  },
+  "scripts": {
+    "start": "node src/app.js",
+    "debug": "nodemon --nolazy --exitcrash -L --watch src -r dotenv/config src/app.js | pino-pretty",
+    "test": "node -r dotenv/config src/test/test.js | pino-pretty",
+    "version": "node -p \"require('./package.json').version\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/cbrown350/forwarded-auth.git"
+  },
+  "author": "Clifford B. Brown",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/cbrown350/forwarded-auth/issues"
+  },
+  "homepage": "https://github.com/cbrown350/forwarded-auth#readme",
+  "dependencies": {
+    "@fastify/auth": "^4.6.1",
+    "@fastify/basic-auth": "^5.1.1",
+    "@fastify/compress": "^7.0.3",
+    "@fastify/cookie": "^9.3.1",
+    "@fastify/jwt": "^8.0.1",
+    "@fastify/view": "^9.1.0",
+    "async-retry": "^1.3.3",
+    "bcrypt": "^5.0.1",
+    "better-sqlite3": "^11.0.0",
+    "check-ip": "^1.1.1",
+    "check-password-strength": "^2.0.5",
+    "date-fns": "^2.28.0",
+    "date-fns-tz": "^1.3.1",
+    "ejs": "^3.1.10",
+    "fastify": "^4.27.0",
+    "fastify-favicon": "^4.3.0",
+    "fastify-plugin": "^4.5.1",
+    "generate-password": "^1.7.0",
+    "http-errors": "^2.0.0",
+    "ip-range-check": "^0.2.0",
+    "minimist": "^1.2.8",
+    "parse-duration": "^1.1.0",
+    "pino": "^6.14.0",
+    "quick.db": "^9.1.7",
+    "resolve-path": "^1.4.0",
+    "server-health": "^5.3.0"
+  },
+  "devDependencies": {
+    "colors": "^1.4.0",
+    "dotenv": "^8.2.0",
+    "nodemon": "^3.1",
+    "pino-pretty": "^6.0.0",
+    "yargs": "^17.4.0"
+  }
+}

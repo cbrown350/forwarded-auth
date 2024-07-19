@@ -1,0 +1,57 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Launch debug (Nodemon)",
+            "request": "launch",
+            "runtimeArgs": [
+                "run-script",
+                "debug"
+            ],
+            "runtimeExecutable": "npm",
+            "console": "internalConsole",
+            "outputCapture": "std",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "type": "pwa-node",
+            "restart": true,
+            "env": {
+                "ALLOW_IP_NO_CREDENTIALS": "false",
+                "ALLOW_IP_NO_CREDENTIALS_SUBNETS": "127.0.0.1/32,::1/128",
+                "ALLOW_IP_NO_CREDENTIALS_TRUSTED_HEADERS" : "x-forwarded-for,x-real-ip",
+        },
+        {
+            "name": "Launch using Node",
+            "program": "${workspaceFolder}/src/app.js",
+            "request": "launch",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "type": "pwa-node"
+        },
+        {
+            "name": "Launch test",
+            "request": "launch",
+            "runtimeArgs": [
+                "test"
+            ],
+            "runtimeExecutable": "npm",
+            "console": "internalConsole",
+            "outputCapture": "std",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "type": "pwa-node"
+        },
+        {
+            "name": "Node.js - Debug Current File",
+            "type": "node",
+            "request": "launch",
+            "program": "${file}"
+        }
+    ]
+}

@@ -1,0 +1,67 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// README at: https://github.com/devcontainers/templates/tree/main/src/javascript-node
+{
+	"name": "forwarded-auth devcontainer",
+	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
+	// "image": "mcr.microsoft.com/devcontainers/javascript-node:1-22-bookworm",
+
+	// Features to add to the dev container. More info: https://containers.dev/features.
+	
+	"features": {
+		"ghcr.io/devcontainers-contrib/features/yamllint:2": {
+			"version": "latest"
+		}
+	},
+
+	// Use 'forwardPorts' to make a list of ports inside the container available locally.
+	"forwardPorts": [
+		8000
+	],
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"natqe.reload",
+				"eamodio.gitlens",
+				"pomdtr.excalidraw-editor",
+				"djlynn03.add-to-git-ignore",
+				"doublebot.doublebot",
+				"milovidov.escape-quotes",
+				"ldez.ignore-files",
+				"ultram4rine.vscode-choosealicense",
+				"IronGeek.vscode-env",
+				"fabiospampinato.vscode-diff",
+				"piotrpalarz.vscode-gitignore-generator",
+				"codezombiech.gitignore",
+				"hediet.vscode-drawio",
+				"github.vscode-github-actions",
+				"Gruntfuggly.todo-tree",
+				"esbenp.prettier-vscode",
+				"cschlosser.doxdocgen",
+				"yzhang.markdown-all-in-one",
+				"humao.rest-client",
+				"ms-azuretools.vscode-docker",
+				"redhat.vscode-yaml"
+			]
+		}
+	},
+	"dockerComposeFile": [
+		"docker-compose.yaml",
+	],
+	"workspaceFolder": "/app",
+	// "runServices": [ "forwarded_auth_dev", "traefik", "dummy_site" ],
+	"service": "forwarded_auth_dev",
+	"overrideCommand": true,
+	"initializeCommand": [ ".devcontainer/host_init" ], 
+	"postCreateCommand": "cd .devcontainer && chmod +x post-create.sh && ./post-create.sh"
+
+	// Use 'postCreateCommand' to run commands after the container is created.
+	// "postCreateCommand": "yarn install",
+
+	// Configure tool-specific properties.
+	// "customizations": {},
+
+	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
+	// "remoteUser": "root"
+	
+	// "workspaceFolder": "/workspace",
+}

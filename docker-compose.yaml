@@ -1,0 +1,63 @@
+networks:
+  forwarded_auth:
+  # traefik_default:
+  #   name: traefik_default
+  #   external: true
+
+
+services:
+  forwarded_auth:
+    # image: ghcr.io/cbrown350/forwarded-auth:latest
+    build: 
+      context: .
+      dockerfile: Dockerfile 
+    container_name: forwarded_auth
+    restart: unless-stopped
+    networks: 
+      - forwarded_auth
+      # - traefik_default # for production, set up and use a network for Traefik
+    ports:
+      - "9900:8000"
+    env_file: .env
+    environment:
+      - TZ=America/Denver
+      - LOG_LEVEL=${LOG_LEVEL:-info}
+      - SERVER_IP=${SERVER_IP:-0.0.0.0}
+      - SERVER_PORT=${SERVER_PORT:-8000}
+      - HOSTNAME=${HOSTNAME}
+      - DB_FILE_PATH=${DB_FILE_PATH:-/app/config/json.sqlite}
+      - NODE_OPTIONS="--max-old-space-size=4096"
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD}
+      - ALLOW_IP_NO_CREDENTIALS=${ALLOW_IP_NO_CREDENTIALS:-false}
+      - ALLOW_IP_NO_CREDENTIALS_SUBNETS=${ALLOW_IP_NO_CREDENTIALS_SUBNETS:-127.0.0.1/32}
+      - ALLOW_IP_NO_CREDENTIALS_TRUSTED_HEADERS=${ALLOW_IP_NO_CREDENTIALS_TRUSTED_HEADERS}
+      - JWT_SECRET=${JWT_SECRET}
+      - PASSPHRASE_HASH=${PASSPHRASE_HASH}
+      - DEFAULT_REDIRECT_ON_AUTH_FAIL_URL=${DEFAULT_REDIRECT_ON_AUTH_FAIL_URL:-https://google.com}
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/lego/certificates:/certs:ro
+      - /etc/ssl/certs/dhparam.pem:/dhparam.pem:ro
+      - ./config:/app/config
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 512M
+        reservations:
+          cpus: '0.5'
+          memory: 80M
+    healthcheck:
+      test: ["CMD", "curl", "-IX", "GET", "http://localhost:${SERVER_PORT}/health?filter=status"]
+      start_period: 15s
+      start_interval: 3s
+      interval: 200s
+      timeout: 200s
+      retries: 5
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "2"
+        max-size: "10m"
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"

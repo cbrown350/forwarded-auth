@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+  <body>
+    <div id="error" class="alert alert-danger" style="display: none;" role="alert"></div>
+    <form id="edit-form" name="Edit User">
+        <p><label for="username">Username:</label>
+        <input <%= locals?.editedUserData?.username ? "readonly" : "" %> type="text" name="username" id="username" class="form-control" value="<%= locals?.editedUserData?.username %>"></p>
+
+        <p><label for="password">Password:</label>
+        <input type="password" name="password" id="password" class="form-control" value="<%= locals?.editedUserData?.password %>" <% if(locals?.editedUserData?.username) { %>placeholder="Leave blank to keep password the same"<% } %>>
+        <input type="checkbox" id="showPassword" onclick="toggleShowPassword()">Show Password</p>
+        <% if(!locals?.editedUserData?.username) { %><input type="hidden" name="enabled" value="true" /><% } %>
+        <input type="hidden" name="redirect" value="/settings/users" />
+        <input type="submit" class="btn btn-danger" value="Submit" class="form-control" />
+        <button type="cancel" class="btn btn-success" onclick="window.location='/settings/users';return false;">Cancel</button>
+
+    </form>
+    
+    <script type="text/javascript">
+        const form = document.getElementById('edit-form');
+        form.onsubmit = function(event){
+                const xhr = new XMLHttpRequest();
+                const formData = new FormData(form);
+                xhr.open('POST','/settings/users/<%= locals?.editedUserData?.username ? "update" : "add" %>')
+                xhr.setRequestHeader("Content-Type", "application/json");
+        
+                xhr.send(JSON.stringify(Object.fromEntries(formData)));
+        
+                xhr.onreadystatechange = function() {
+                    if (xhr.readyState == XMLHttpRequest.DONE) {
+                        const error = JSON.parse(xhr.response).error;
+                        const errorBox = document.getElementById('error');
+                        if(!error) {
+                            const errorBox = document.getElementById('error');
+                            errorBox.style.display = "none";
+                            window.location.href = formData.get('redirect');
+                        } else {
+                            errorBox.style.display = "block";
+                            errorBox.innerHTML = error;
+                        }
+                    }
+                }
+                //Fail the onsubmit to avoid page refresh.
+                return false; 
+            }
+        var timer;
+        function toggleShowPassword() {
+            let passwordBox = document.getElementById("password");
+            let showPass = document.getElementById("showPassword");
+            if (passwordBox.type === "password") {
+                passwordBox.type = "text";
+                showPass.checked = true;
+                clearTimeout(timer);
+                timer = setTimeout(toggleShowPassword, 30000);
+            } else {
+                clearTimeout(timer);
+                passwordBox.type = "password";
+                showPass.checked = false;
+            }
+        } 
+        window.otherOnloadFuncs = (window.otherOnloadFuncs || []).concat([(()=>document.getElementById("showPassword").checked=false)]);
+      </script>
+    
+    </body>
+  </html>
+  

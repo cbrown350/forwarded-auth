@@ -1,0 +1,148 @@
+volumes:
+  vscode-extensions:
+
+networks:
+  default:  
+    driver: bridge
+    driver_opts:
+        com.docker.network.bridge.enable_ip_masquerade: 'false'
+
+
+services:
+  forwarded_auth_dev:
+    extends:
+      file: ../docker-compose.yaml
+      service: forwarded_auth
+    env_file: ../.env
+    environment:
+      - NODE_ENV=development
+      - NODE_OPTIONS=""
+    networks: !override
+      - default
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - vscode-extensions:/root/.vscode-server/extensions
+      - ../:/app:cached
+    command: /bin/sh -c "while sleep 1000; do :; done" 
+
+
+  traefik_dev:
+    image: traefik:latest # v2.6
+    container_name: traefik_dev
+    restart: unless-stopped
+    networks:
+      - default
+    ports:
+      - 80:80
+      - 443:443
+    # network_mode: host # needed to get x-real-ip for client
+    env_file: ../.env
+    environment:
+      - TZ=America/Denver
+      - CLOUDFLARE_DNS_API_TOKEN=${CLOUDFLARE_DNS_API_TOKEN}
+      - CLOUDFLARE_EMAIL=${CLOUDFLARE_EMAIL}
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./letsencrypt:/letsencrypt
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    command:
+      - --log.level=DEBUG
+      - --log.format=common
+      - --accessLog.filters.statusCodes=400-499
+      - --accessLog.filePath=/var/log/access.log
+      - --api.insecure=true
+      - --providers.docker=true
+      - --providers.docker.exposedbydefault=false
+      - --entrypoints.web.address=:80
+      # - --entrypoints.web.proxyProtocol.insecure=true
+      # - --entrypoints.web.forwardedHeaders.insecure=true
+      - --entrypoints.web.forwardedHeaders.trustedIPs=${TRUSTED_HEADER_SOURCE_IPS}
+      # # - --experimental.http3=true # version <3 only
+      # - --entrypoints.websecure.http3
+      # - --entrypoints.websecure.http3.advertisedPort=443
+      - --entrypoints.websecure.address=:443
+      - --entrypoints.websecure.http.tls=true
+      - --entrypoints.websecure.forwardedHeaders.trustedIPs=${TRUSTED_HEADER_SOURCE_IPS}
+      # - --entrypoints.websecure.http.tls.certResolver=letsencrypt
+      # - --entrypoints.websecure.http.tls.domains[0].main=${ACME_DOMAIN}
+      # - --entrypoints.websecure.http.tls.domains[0].sans=${ACME_SANS_DOMAIN}
+      # # - --entrypoints.web.http.redirections.entryPoint.to=websecure
+      # # - --entrypoints.web.http.redirections.entryPoint.scheme=https
+      # # - "--entrypoints.dnsovertls.address=:853"
+      # # - "--entrypoints.dns.address=:53"
+      # # - "--entrypoints.udpdns.address=:53/udp"
+      # # cert resolver
+      # - "--certificatesresolvers.letsencrypt.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory"
+      # # ******************** IP must be allowed for CloudFlare API tokens ****************************
+      # - "--certificatesresolvers.letsencrypt.acme.dnschallenge=true"
+      # - "--certificatesresolvers.letsencrypt.acme.dnschallenge.provider=cloudflare"
+      # - --certificatesresolvers.letsencrypt.acme.dnschallenge.resolvers=1.1.1.1:53,1.0.0.1:53
+      # # - "--certificatesresolvers.letsencrypt.acme.dnschallenge.disablepropagationcheck=true"
+      # - "--certificatesresolvers.letsencrypt.acme.email=${ACME_EMAIL}"
+      # - "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
+      # # Allow these IPs to set the X-Forwarded-* headers - Cloudflare IPs: https://www.cloudflare.com/ips/
+      # - --entrypoints.https.forwardedHeaders.trustedIPs=173.245.48.0/20,103.21.244.0/22,103.22.200.0/22,103.31.4.0/22,141.101.64.0/18,108.162.192.0/18,190.93.240.0/20,188.114.96.0/20,197.234.240.0/22,198.41.128.0/17,162.158.0.0/15,104.16.0.0/13,104.24.0.0/14,172.64.0.0/13,131.0.72.0/22
+
+
+  dummy_site:
+    image: nginx
+    container_name: dummy_site
+    restart: unless-stopped
+    networks:
+      - default
+    ports:
+      - 81:80
+    env_file: ../.env
+    environment:
+      - TZ=America/Denver
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+    logging:
+      driver: json-file
+      options:
+        max-size: "250m"
+        max-file: "10"
+    depends_on:
+      - traefik_dev    
+    labels: # https://stackoverflow.com/questions/58356714/how-to-redirect-http-to-https-with-traefik-2-0-and-docker-compose-labels
+      - com.centurylinklabs.watchtower.enable=false
+      - traefik.enable=true
+      # - traefik.port=9000
+      - traefik.docker.network=forwarded-auth_devcontainer_default
+
+      # - traefik.http.middlewares.dummy_site-redirect-web-secure.redirectscheme.scheme=https
+
+      # - traefik.http.middlewares.middlewares-chain.chain.middlewares=dummy_site-redirect-web-secure,test-auth
+      - traefik.http.middlewares.middlewares-chain.chain.middlewares=test-auth@docker,robots-header@docker
+
+      # - traefik.http.routers.dummy_site-server-unsecure.middlewares=dummy_site-redirect-web-secure
+      - traefik.http.routers.dummy_site-server-unsecure.middlewares=middlewares-chain
+      
+      - traefik.http.routers.dummy_site-server-unsecure.rule=Host(`${ACME_TEST_DOMAIN}`)
+      - traefik.http.routers.dummy_site-server-unsecure.entrypoints=web
+      - traefik.http.routers.dummy_site-server-unsecure.service=dummy_site-server      
+
+      - traefik.http.middlewares.test-auth.forwardauth.authRequestHeaders=cookie,${ALLOW_IP_NO_CREDENTIALS_TRUSTED_HEADERS}
+      # - traefik.http.middlewares.robots-header.headers.customrequestheaders.X-Redirect-On-Auth-Fail-URL=https://reddit.com?from-label
+      - traefik.http.middlewares.robots-header.headers.customresponseheaders.X-Robots-Tag=noindex,nofollow,nosnippet,noarchive,notranslate,noimageindex
+      # - traefik.http.routers.dummy_site-server.middlewares=robots-header@docker
+      - traefik.http.routers.dummy_site-server.middlewares=middlewares-chain
+
+      # - traefik.frontend.rule=Host:${ACME_TEST_DOMAIN}
+      - traefik.http.routers.dummy_site-server.rule=Host(`${ACME_TEST_DOMAIN}`)
+      # - traefik.http.routers.dummy_site-server.tls.domains[0].main=${ACME_TEST_DOMAIN}
+      # - traefik.http.routers.dummy_site-server.rule=Host:${ACME_TEST_DOMAIN}
+      # Allow request only from the predefined entry point named "websecure
+      # - traefik.http.routers.dummy_site-server.entrypoints=web,websecure
+      - traefik.http.routers.dummy_site-server.service=dummy_site-server
+      - traefik.http.services.dummy_site-server.loadbalancer.server.port=80
+      - traefik.http.routers.dummy_site-server.entrypoints=websecure
+      # - traefik.http.routers.dummy_site-server.tls=true
+      # - traefik.http.routers.dummy_site-server.tls.certresolver=letsencrypt
+      
+      # Set up forwarded auth server
+      # - traefik.http.middlewares.test-auth.forwardauth.trustForwardHeader=true
+      - traefik.http.middlewares.test-auth.forwardauth.address=http://forwarded_auth:${SERVER_PORT}/auth?X-Redirect-On-Auth-Fail-URL=https://reddit.com?from-label&cookie_domain=${ACME_TEST_DOMAIN}
+      # - traefik.http.middlewares.test-auth.forwardauth.tls.insecureSkipVerify=true
+      - traefik.http.middlewares.test-auth.forwardauth.authResponseHeaders=none
+      - traefik.http.middlewares.test-auth.forwardauth.addAuthCookiesToResponse=${COOKIE_NAME:-forwardAuth}
