@@ -59,4 +59,4 @@ services:
         max-file: "2"
         max-size: "10m"
     labels:
-      - "com.centurylinklabs.watchtower.enable=true"
+      - "com.centurylinklabs.watchtower.enable=true" 

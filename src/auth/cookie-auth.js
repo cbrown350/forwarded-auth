@@ -46,9 +46,10 @@ module.exports = fp(async (fastify, opts)=> {
     const remoteIp = request.remoteIp;
     const username = request?.userData?.username;
     const jwtToken = fastify.jwtBuildToken(username, remoteIp, cookieTTL);
+    const maxAge = cookieTTL ? parseDuration(cookieTTL)/1000 : 86400; //seconds
     reply.setCookie(cookieName, jwtToken, {
       path: '/',
-      maxAge: parseDuration(cookieTTL), //ms
+      maxAge, //seconds
       httpOnly: true,
       sameSite: 'lax',
       secure: true,
