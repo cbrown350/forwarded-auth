@@ -21,13 +21,13 @@ Once running, it works for any Docker container added at any time that is proxie
 
 ### Examples
 #### Passphrase
-GET https://<service_name>?pf=<passphrase>
+GET https://<service_name>?pf=\<passphrase>
 #### Username/Password
-GET https://<service_name>?u=<username>&p=<password>
+GET https://<service_name>?u=\<username>&p=\<password>
 #### JWT Token
 GET https://<service_name>?t=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImNicm93biIsInJlbW90ZUlwIjoiMTcyLjE4LjAuMSIsImlhdCI6MTcyMTM1MjM2NSwiZXhwIjoxNzIxNzg0MzY1fQ.haUQ11ecDEdbeKnESr5iUCL4S2zXpoxhOAf0mqpJ_z4
 #### Cookie
-GET https://<service_name>
+GET https://<service_name><br>
 cookie: forwardAuth=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImNicm93biIsInJlbW90ZUlwIjoiMTcyLjE4LjAuMSIsImlhdCI6MTcyMTM1MjM2NSwiZXhwIjoxNzIxNzg0MzY1fQ.haUQ11ecDEdbeKnESr5iUCL4S2zXpoxhOAf0mqpJ_z4
 
 After any successful authentication, the forwarded-auth service will set a cookie with the JWT token, so once you authenticate initially through a static url, subsequent requests will be authenticated automatically.

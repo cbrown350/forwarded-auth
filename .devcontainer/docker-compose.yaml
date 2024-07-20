@@ -39,8 +39,6 @@ services:
     env_file: ../.env
     environment:
       - TZ=America/Denver
-      - CLOUDFLARE_DNS_API_TOKEN=${CLOUDFLARE_DNS_API_TOKEN}
-      - CLOUDFLARE_EMAIL=${CLOUDFLARE_EMAIL}
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ./letsencrypt:/letsencrypt

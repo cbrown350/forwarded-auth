@@ -10,5 +10,5 @@
             "ecmaVersion": 8 // or 7,8,9
         }
     },
-    "debug.javascript.autoAttachFilter": "smart" // may need to toggle off and restart terminal and on if getting booloader.js not found error
+    "debug.javascript.autoAttachFilter": "disabled" // may need to toggle off and restart terminal and on if getting booloader.js not found error
 }
