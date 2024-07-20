@@ -51,6 +51,7 @@ module.exports = (fastify, opts, done) => {
 };
 
 function onAuthFail(request, reply, error) {    
+    log.info(`Auth failed from ${request.remoteIp}, redirecting to ${reply.redirectUrl }`);
     reply.statusCode = 307;
     reply.redirect(reply.redirectUrl || defaultRedirectOnAuthFail || 'https://google.com').send();
 }
