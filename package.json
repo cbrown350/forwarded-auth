@@ -1,6 +1,6 @@
 {
   "name": "forwarded-auth",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Auth middleware to which forwarded auth requests can be sent for Traefik",
   "main": "src/app.js",
   "engines": {
