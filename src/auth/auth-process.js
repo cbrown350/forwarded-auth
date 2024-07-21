@@ -29,6 +29,8 @@ module.exports = (fastify, opts, done) => {
 
         try {
             fastify.setCookieAuth(request, reply, request?.query['cookie_domain'] );
+            if(reply.redirectStrippedUrl)
+                reply.redirect(reply.redirectStrippedUrl);
             reply.send('authorized');
             return;
         } catch(err) {

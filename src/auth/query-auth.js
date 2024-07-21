@@ -57,7 +57,12 @@ module.exports = fp(async (fastify) => {
       }
       request.userData = { username };
     }
-
+    const proto = request?.headers['x-forwarded-proto'];
+    const host = request?.headers['x-forwarded-host'];
+    if(proto && host && forwardedUri) {
+      const strippedUri = forwardedUri.replace(/pf=[^&]*/g, '').replace(/u=[^&]*/g, '').replace(/p=[^&]*/g, '');
+      reply.redirectStrippedUrl = `${proto}://${host}${strippedUri}`;
+    }
     log.info(`'${username}' logged in from ${remoteIp} using password`);
     // done();
   }
