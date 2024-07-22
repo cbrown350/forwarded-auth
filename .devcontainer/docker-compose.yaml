@@ -20,6 +20,7 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - vscode-extensions:/root/.vscode-server/extensions
+      - ~/.ssh:/root/.ssh
       - ../:/app:cached
     command: /bin/sh -c "while sleep 1000; do :; done" 
 
