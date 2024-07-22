@@ -24,6 +24,7 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 # Install Python3 needed for some node packages
 RUN apt-get update \
     && apt-get install -y \
+        curl \
         python3-launchpadlib \
             --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
