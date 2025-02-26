@@ -23,6 +23,7 @@
                 "ALLOW_IP_NO_CREDENTIALS": "false",
                 "ALLOW_IP_NO_CREDENTIALS_SUBNETS": "127.0.0.1/32,::1/128",
                 "ALLOW_IP_NO_CREDENTIALS_TRUSTED_HEADERS" : "x-forwarded-for,x-real-ip",
+            }
         },
         {
             "name": "Launch using Node",
