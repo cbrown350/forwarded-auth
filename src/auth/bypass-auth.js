@@ -23,7 +23,7 @@ module.exports = fp(async (fastify, opts) => {
       try {
         log.info(`User logged in from ${remoteIp} as allowed with bypass auth path prefix ${bypass_pathprefix}.`);
         request.userData = { username: '***pathprefix-login***' };
-        // done();
+        done();
         return;
       } catch(err) {
         log.error(err);

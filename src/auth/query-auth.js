@@ -64,6 +64,6 @@ module.exports = fp(async (fastify) => {
       reply.redirectStrippedUrl = `${proto}://${host}${strippedUri}`;
     }
     log.info(`'${username}' logged in from ${remoteIp} using password`);
-    // done();
+    done();
   }
 });

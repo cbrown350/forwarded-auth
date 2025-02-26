@@ -28,7 +28,7 @@ module.exports = fp(async (fastify, opts) => {
         log.info(`User logged in from ${remoteIp} as allowed on local network`);
         request.userData = { username: '***local-ip-login***' };
         request.isAllowedIp = true;
-        // done();
+        done();
         return;
       } 
     } catch(err) {
