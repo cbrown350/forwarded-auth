@@ -81,6 +81,7 @@ A full configuration example is set out between the two `docker-compose.yaml` fi
 | ------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
 | `cookie_domain`                                     | Domain set on the auth cookie; may be specific to exact domain or on the root domain (settings are lax) |
 | `X-Redirect-On-Auth-Fail-URL`                                     | URL to which failed requests are redirected for the service |
+| `bypass_pathprefix`                                     | path prefix to bypass auth for the service; it will set a valid cookie for future requests |
 
 See the full [forwardauth Traefik documentation](https://doc.traefik.io/traefik/middlewares/http/forwardauth/) for the related labels: `https://doc.traefik.io/traefik/middlewares/http/forwardauth/`
 
