@@ -25,6 +25,7 @@ fastify.register(require('./auth/ip-auth.js'), {
 });
 fastify.register(require('./auth/query-auth.js'));
 fastify.register(require('./auth/cookie-auth.js'));
+fastify.register(require('./auth/bypass-auth.js'));
 
 fastify.register(require('fastify-favicon'), { path: resolvePath('./src/static'), name: 'favicon.ico' })
 

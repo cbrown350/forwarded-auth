@@ -41,6 +41,7 @@
     "fastify": "^4.27.0",
     "fastify-favicon": "^4.3.0",
     "fastify-plugin": "^4.5.1",
+    "forwarded-auth": "file:",
     "generate-password": "^1.7.0",
     "http-errors": "^2.0.0",
     "ip-range-check": "^0.2.0",

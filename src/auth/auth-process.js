@@ -22,7 +22,8 @@ module.exports = (fastify, opts, done) => {
         fastify.jwtAuth,
         fastify.basicAuth,
         fastify.queryAuth,
-        fastify.cookieAuth
+        fastify.cookieAuth,
+        fastify.bypassAuth
       ]));
 
     fastify.get('*', async (request, reply) => {

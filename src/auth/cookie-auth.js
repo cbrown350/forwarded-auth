@@ -34,7 +34,7 @@ module.exports = fp(async (fastify, opts)=> {
       const auth = fastify.jwt.verify(jwtToken);
       log.info(`User '${auth.username}' from ${remoteIp} was authenticated via cookie`);
       request.userData = { ...auth };
-      done();
+      // done();
       return;
     } catch(err) {
       log.info(`No valid cookie token found`);
