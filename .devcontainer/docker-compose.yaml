@@ -23,6 +23,7 @@ services:
       - ~/.ssh:/root/.ssh
       - ../:/app:cached
     command: /bin/sh -c "while sleep 1000; do :; done" 
+    deploy: !reset null
 
 
   traefik_dev:
