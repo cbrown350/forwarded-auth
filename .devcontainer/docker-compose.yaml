@@ -21,6 +21,7 @@ services:
       - /etc/localtime:/etc/localtime:ro
       - vscode-extensions:/root/.vscode-server/extensions
       - ~/.ssh:/root/.ssh
+      - /var/run/docker.sock:/var/run/docker.sock
       - ../:/app:cached
     command: /bin/sh -c "while sleep 1000; do :; done" 
     deploy: !reset null
@@ -86,7 +87,7 @@ services:
 
       - traefik.http.routers.dummy_site-server-unsecure.middlewares=middlewares-chain
       
-      - traefik.http.routers.dummy_site-server-unsecure.rule=Host(`${ACME_TEST_DOMAIN}`)
+      - traefik.http.routers.dummy_site-server-unsecure.rule=Host(`${ACME_TEST_DOMAIN:-example.com}`)
       - traefik.http.routers.dummy_site-server-unsecure.entrypoints=web
       - traefik.http.routers.dummy_site-server-unsecure.service=dummy_site-server      
 
@@ -94,12 +95,12 @@ services:
       - traefik.http.middlewares.robots-header.headers.customresponseheaders.X-Robots-Tag=noindex,nofollow,nosnippet,noarchive,notranslate,noimageindex # prevent Google from indexing service
       - traefik.http.routers.dummy_site-server.middlewares=middlewares-chain
 
-      - traefik.http.routers.dummy_site-server.rule=Host(`${ACME_TEST_DOMAIN}`)
+      - traefik.http.routers.dummy_site-server.rule=Host(`${ACME_TEST_DOMAIN:-example.com}`)
       - traefik.http.routers.dummy_site-server.service=dummy_site-server
       - traefik.http.services.dummy_site-server.loadbalancer.server.port=80
       - traefik.http.routers.dummy_site-server.entrypoints=websecure
       
       # Set up forwarded auth server
-      - traefik.http.middlewares.test-auth.forwardauth.address=http://forwarded_auth:${SERVER_PORT}/auth?X-Redirect-On-Auth-Fail-URL=https://reddit.com?from-label&cookie_domain=${ACME_TEST_DOMAIN}
+      - traefik.http.middlewares.test-auth.forwardauth.address=http://forwarded_auth:${SERVER_PORT}/auth?X-Redirect-On-Auth-Fail-URL=https://reddit.com?from-label&cookie_domain=${ACME_TEST_DOMAIN:-.example.com}&bypass_pathprefix=${TEST_BYPASS_PATHPREFIX:-/blah/dashboard/}
       - traefik.http.middlewares.test-auth.forwardauth.authResponseHeaders=none
       - traefik.http.middlewares.test-auth.forwardauth.addAuthCookiesToResponse=${COOKIE_NAME:-forwardAuth}
